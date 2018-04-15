@@ -22,16 +22,16 @@ for pkg in $pkgs
 do
     if [ `expr $i % 2` -eq 0 ]
     then
-        ret[$index]="$pkg"
+        ret[$index]=`echo $pkg | sed 's/\(-\|\([0-9]\).\)\([0-9].\+\)\+\([a-z]\+\)\([a-zA-Z0-9].\+\)\(xz\|gz\|bz\)//g'`
         index=`expr $index + 1`
     fi
     i=`expr $i + 1`
 done
 
 #Print parsed package
-#i=0
-#while [ "$i" -lt $index ]
-#do
-#    echo "${ret[$i]}"
-#    i=`expr $i + 1`
-#done
+i=0
+while [ "$i" -lt $index ]
+do
+    echo "${ret[$i]}"
+    i=`expr $i + 1`
+done
