@@ -45,17 +45,21 @@ searchIndex() {
     searchedFilename="${!2}"
     for pkg in ${packageFilename[@]}
     do
-        echo $pkg
         if [ $2 == $pkg ]
         then
             return $index
         fi
     index=`expr $index + 1`
     done
-    return 2
+    return -1
 }
 
-searchIndex pkgfile[@] zlib
-index=$?
+fileOrdered=(binutils gcc)
 
-echo $index
+for f in ${fileOrdered[@]}
+do
+    searchIndex pkgfile[@] $f
+    index=$?
+    tar -xf "${pkgtar[$index]}"
+    #sh pkgfile[$index]
+done
