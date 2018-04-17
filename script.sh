@@ -22,16 +22,40 @@ for pkg in $pkgs
 do
     if [ `expr $i % 2` -eq 0 ]
     then
-        ret[$index]=`echo $pkg | sed 's/\(-\|\([0-9]\).\)\([0-9].\+\)\+\([a-z]\+\)\([a-zA-Z0-9].\+\)\(xz\|gz\|bz\)//g'`
+        #The pkgfile variable represent the shell file that will be excuted for the complile the files in the pkgtar archive
+        pkgfile[$index]=`echo $pkg | sed 's/\(-\|\([0-9]\).\)\([0-9].\+\)\+\([a-z]\+\)\([a-zA-Z0-9].\+\)\(xz\|gz\|bz2\|bz\)//g'`
+        pkgtar[$index]=$pkg
         index=`expr $index + 1`
     fi
     i=`expr $i + 1`
 done
 
 #Print parsed package
-i=0
-while [ "$i" -lt $index ]
-do
-    echo "${ret[$i]}"
-    i=`expr $i + 1`
-done
+#i=0
+#while [ "$i" -lt $index ]
+#do
+#    echo "${pkgfile[$i]}"
+#    echo "${pkgtar[$i]}"
+#    i=`expr $i + 1`
+#done
+
+searchIndex() {
+    index=0
+    packageFilename="${!1}"
+    searchedFilename="${!2}"
+    for pkg in ${packageFilename[@]}
+    do
+        echo $pkg
+        if [ $2 == $pkg ]
+        then
+            return $index
+        fi
+    index=`expr $index + 1`
+    done
+    return 2
+}
+
+searchIndex pkgfile[@] zlib
+index=$?
+
+echo $index
