@@ -17,13 +17,14 @@ cd pkg
 pkgs=`cat md5sums`
 i=1
 index=0
+sedregx='s/\(-\|\([0-9]\).\)\([0-9].\+\)\+\([a-z]\+\)\([a-zA-Z0-9].\+\)\(xz\|gz\|bz2\|bz\)//g'
 
 for pkg in $pkgs
 do
     if [ `expr $i % 2` -eq 0 ]
     then
         #The pkgfile variable represent the shell file that will be excuted for the complile the files in the pkgtar archive
-        pkgfile[$index]=`echo $pkg | sed 's/\(-\|\([0-9]\).\)\([0-9].\+\)\+\([a-z]\+\)\([a-zA-Z0-9].\+\)\(xz\|gz\|bz2\|bz\)//g'`
+        pkgfile[$index]=`echo $pkg | sed $sedregx`
         pkgtar[$index]=$pkg
         index=`expr $index + 1`
     fi
@@ -54,12 +55,16 @@ searchIndex() {
     return -1
 }
 
-fileOrdered=(binutils gcc)
+fileOrdered=(binutils)
 
 for f in ${fileOrdered[@]}
 do
     searchIndex pkgfile[@] $f
     index=$?
-    tar -xf "${pkgtar[$index]}"
-    #sh pkgfile[$index]
+    mkdir $f
+    tar -xf "${pkgtar[$index]}" -C $f --strip-components=1
+    cd ..
+    sh $f
+    cd pkg
+    rm -rf "${pkgtar[$index]}"
 done
